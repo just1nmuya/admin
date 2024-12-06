@@ -30,9 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ImageUpload from "@/components/ui/image-upload";
 
 const formSchema = z.object({
   name: z.string().min(1),
+  image: z.string().min(1),
   billboardId: z.string().min(1),
 });
 
@@ -60,10 +62,17 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      billboardId: "",
-    },
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          image: initialData.image || "",
+          billboardId: initialData.billboardId || "",
+        }
+      : {
+          name: "",
+          image: "",
+          billboardId: "",
+        },
   });
 
   const onSubmit = async (data: CategoryFormValues) => {
@@ -134,6 +143,24 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
           className="space-y-8 w-full"
         >
           <div className="grid grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value ? [field.value] : []}
+                      disabled={loading}
+                      onChange={(url) => field.onChange(url)}
+                      onRemove={() => field.onChange("")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="name"

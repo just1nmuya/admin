@@ -28,9 +28,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onUpload = (result: any) => {
-    onChange(result.info.secure_url);
+    onChange(result.info.secure_url);  // Pass the image URL string to onChange
   };
-
+  
   if (!isMounted) {
     return null;
   }
@@ -53,10 +53,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <Trash className="h-4 w-4" />
               </Button>
             </div>
-
-            <div className="relative w-full h-full">
-              <Image fill className="object-cover" alt="Image" src={url} />
-            </div>
+            <Image fill src={url} alt="Image" className="object-cover" />
           </div>
         ))}
       </div>

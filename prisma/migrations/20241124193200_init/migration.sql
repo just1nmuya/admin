@@ -63,6 +63,7 @@ CREATE TABLE "Product" (
     "storeId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "price" DECIMAL(65,30) NOT NULL,
     "isFeatured" BOOLEAN NOT NULL DEFAULT false,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,

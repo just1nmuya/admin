@@ -36,6 +36,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   name: z.string().min(1),
+  description: z.string().min(1),
   images: z.object({ url: z.string() }).array(),
   price: z.coerce.number().min(1),
   categoryId: z.string().min(1),
@@ -84,6 +85,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         }
       : {
           name: "",
+          description: "",
           images: [],
           price: 0,
           categoryId: "",
@@ -166,22 +168,18 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  <div className="relative w-full h-full">
-                    <ImageUpload
-                      value={field.value.map((image) => image.url)}
-                      disabled={loading}
-                      onChange={(url) =>
-                        field.onChange([...field.value, { url }])
-                      }
-                      onRemove={(url) =>
-                        field.onChange([
-                          ...field.value.filter(
-                            (current) => current.url !== url
-                          ),
-                        ])
-                      }
-                    />
-                  </div>
+                  <ImageUpload
+                    value={field.value.map((image) => image.url)} // Mapping to get the URLs as strings
+                    disabled={loading}
+                    onChange={(url: string) =>
+                      field.onChange([...field.value, { url }])
+                    } // Adding the image URL as an object
+                    onRemove={(url: string) =>
+                      field.onChange(
+                        field.value.filter((image) => image.url !== url)
+                      )
+                    } // Removing the image by matching the URL
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -198,6 +196,23 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     <Input
                       disabled={loading}
                       placeholder="Product name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Product Description"
                       {...field}
                     />
                   </FormControl>

@@ -36,7 +36,7 @@ export async function PATCH(
     const { userId } = await auth();
     const body = await req.json();
 
-    const { name, billboardId } = body;
+    const { name, image, billboardId } = body;
 
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
@@ -44,6 +44,10 @@ export async function PATCH(
 
     if (!name) {
       return new Response("Name is required", { status: 400 });
+    }
+
+    if (!image) {
+      return new Response("Image is required", { status: 400 });
     }
 
     if (!billboardId) {
@@ -71,6 +75,7 @@ export async function PATCH(
       },
       data: {
         name,
+        image,
         billboardId,
       },
     });

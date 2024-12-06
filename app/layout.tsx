@@ -4,7 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ModalProvider } from "@/providers/modal-provider";
 import "./globals.css";
 import { ToasterProvider } from "@/providers/toast-provider";
-import { ThemeProvider } from "@/prisma/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
