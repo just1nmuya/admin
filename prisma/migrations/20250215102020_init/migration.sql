@@ -92,6 +92,7 @@ CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
     "isPaid" BOOLEAN NOT NULL DEFAULT false,
+    "transactionDetails" JSONB,
     "phone" TEXT NOT NULL DEFAULT '',
     "address" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
