@@ -1,6 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
@@ -14,7 +14,11 @@ const mpesaHeaders = {
 
 // OPTIONS handler for CORS
 export async function OPTIONS() {
-  return NextResponse.json({}, { headers: mpesaHeaders });
+  // For a 204 No Content response, use NextResponse directly with a null body
+  return new NextResponse(null, {
+    status: 204,
+    headers: mpesaHeaders,
+  });
 }
 
 // Helper function to format phone numbers to international format
@@ -34,14 +38,20 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ storeId: string }> }
 ) {
-  // Await dynamic params correctly
-  const { storeId } = await params;
-  const { phone, amount, productIds } = await request.json();
+  
 
-  if (!phone || !amount || !productIds || productIds.length === 0) {
-    return NextResponse.json("Phone, Amount and Product Ids are required", {
-      status: 400,
-    });
+  const { storeId } = await params;
+  
+
+  // Extract phone, amount, productIds, and address from the request body
+  const { phone, amount, productIds, address } = await request.json();
+
+  // Validate that all required fields are provided
+  if (!phone || !amount || !productIds || productIds.length === 0 || !address) {
+    return NextResponse.json(
+      "Phone, Amount, Product Ids, and Delivery Address are required",
+      { status: 400 }
+    );
   }
 
 
@@ -53,11 +63,13 @@ export async function POST(
     return NextResponse.json("Amount must be a valid number", { status: 400 });
   }
 
-  // Create an order record with initial values (isPaid false)
+  // Create an order record with initial values and capture the phone number and delivery address
   const order = await prismadb.order.create({
     data: {
       storeId,
       isPaid: false,
+      phone: formattedPhone, // Save the formatted phone number
+      address, // Save the delivery address
       orderItems: {
         create: productIds.map((productId: string) => ({
           product: { connect: { id: productId } },
@@ -106,7 +118,7 @@ export async function POST(
   }
 
   // Build payload with the callback URL including the order ID.
-  // IMPORTANT: Ensure that FRONTEND_STORE_URL is a publicly accessible HTTPS URL.
+
   const callbackURL = `${process.env.FRONTEND_STORE_URL}/api/mpesa/callback?order_id=${order.id}`;
   const payload = {
     BusinessShortCode: businessShortCode,
@@ -118,7 +130,7 @@ export async function POST(
     PartyB: businessShortCode,
     PhoneNumber: formattedPhone,
     CallBackURL: callbackURL,
-    AccountReference: "Stores", // You can adjust as needed
+    AccountReference: "Stores",
     TransactionDesc: "Purchase Payment",
   };
 
@@ -129,8 +141,7 @@ export async function POST(
       payload,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
-
-
+    
     console.log("STK Push Response:", response.data);
 
     return NextResponse.json(

@@ -23,6 +23,7 @@ model Store {
   colors     Color[]     @relation("StoreToColor")
   products   Product[]   @relation("StoreToProduct")
   orders     Order[]     @relation("StoreToOrder")
+  contacts   Contact[]   @relation("StoreToContact")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -122,4 +123,15 @@ model OrderItem {
   order     Order   @relation(fields: [orderId], references: [id])
   productId String
   product   Product @relation(fields: [productId], references: [id])
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation("StoreToContact", fields: [storeId], references: [id])
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
