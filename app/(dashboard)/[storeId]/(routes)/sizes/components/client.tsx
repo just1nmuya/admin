@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 
 import { SizeColumn, columns } from "./columns";
-import { ApiList } from "@/components/ui/api-list";
+// import { ApiList } from "@/components/ui/api-list";
 
 interface SizesClientProps {
   data: SizeColumn[];
@@ -35,9 +35,9 @@ export const SizesClient: React.FC<SizesClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable searchKey="name" columns={columns} data={data} />
-      <Heading title="API" description="API calls for Sizes"/>
+      {/* <Heading title="API" description="API calls for Sizes"/> */}
       <Separator/>
-      <ApiList entityName="sizes" entityIdName="sizeId" />
+      {/* <ApiList entityName="sizes" entityIdName="sizeId" /> */}
     </>
   );
 };

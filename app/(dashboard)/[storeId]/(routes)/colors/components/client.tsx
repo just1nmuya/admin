@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 
 import { ColorColumn, columns } from "./columns";
-import { ApiList } from "@/components/ui/api-list";
+// import { ApiList } from "@/components/ui/api-list";
 
 interface ColorsClientProps {
   data: ColorColumn[];
@@ -33,9 +33,9 @@ export const ColorsClient: React.FC<ColorsClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable searchKey="name" columns={columns} data={data} />
-      <Heading title="API" description="API calls for Colors" />
-      <Separator />
-      <ApiList entityName="colors" entityIdName="colorId" />
+      {/* <Heading title="API" description="API calls for Colors" /> */}
+      {/* <Separator /> */}
+      {/* <ApiList entityName="colors" entityIdName="colorId" /> */}
     </>
   );
 };

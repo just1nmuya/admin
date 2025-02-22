@@ -20,6 +20,7 @@ export const getGraphRevenue = async (storeId: string) => {
     },
   });
 
+
   const monthlyRevenue: { [key: number]: number } = {};
 
   for (const order of paidOrders) {
