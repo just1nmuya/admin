@@ -49,6 +49,7 @@ export async function POST(req: Request, props: { params: Promise<{ storeId: str
     data: {
       storeId: params.storeId,
       isPaid: false,
+      paymentMethod: "stripe",
       orderItems: {
         create: productIds.map((productid: string) => ({
           product: {

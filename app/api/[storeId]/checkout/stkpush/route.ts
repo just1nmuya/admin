@@ -68,6 +68,7 @@ export async function POST(
     data: {
       storeId,
       isPaid: false,
+      paymentMethod: "mpesa",
       phone: formattedPhone, // Save the formatted phone number
       address, // Save the delivery address
       orderItems: {
