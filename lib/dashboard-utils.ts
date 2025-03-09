@@ -24,7 +24,7 @@ export async function getPreviousPeriodData() {
   
       return {
         previousRevenue: 0, // Example value
-        previousSales: 3, // Example value
+        previousSales: 0, // Example value
         previousStock: 15, // Example value
         lowStockThreshold: 10, // Configure your threshold for low stock warning
       }
