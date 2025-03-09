@@ -1,13 +1,14 @@
 interface HeadingProps {
-  title: string;
-  description: string;
+  title: string
+  description?: string
 }
 
-export const Heading: React.FC<HeadingProps> = ({ title, description }) => {
+export function Heading({ title, description }: HeadingProps) {
   return (
-    <div className="text-3xl font-semibold tracking-tight">
-      <h2>{title}</h2>
-      <p className="text-sm text-muted-foreground">{description}</p>
+    <div className="flex flex-col gap-1">
+      <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
     </div>
-  );
-};
+  )
+}
+
