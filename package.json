@@ -10,6 +10,9 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@capacitor/android": "^7.0.1",
+    "@capacitor/core": "^7.0.1",
+    "@capacitor/ios": "^7.0.1",
     "@clerk/nextjs": "^6.3.4",
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^6.3.1",
@@ -51,6 +54,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.0.1",
     "@types/cors": "^2.8.17",
     "@types/node": "^20",
     "@types/react": "^18",
