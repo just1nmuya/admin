@@ -1,43 +1,68 @@
-"use client";
+"use client"
 
-import { Plus } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import type React from "react"
 
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
+import { useState } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { Plus } from "lucide-react"
 
-import { BillboardColumn, columns } from "./columns";
-// import { ApiList } from "@/components/ui/api-list";
+import { Button } from "@/components/ui/button"
+import { DataTable } from "@/components/ui/data-table"
+// import { ApiList } from "@/components/ui/api-list"
+import { type BillboardColumn, columns } from "./columns"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface BillboardClientProps {
-  data: BillboardColumn[];
+  data: BillboardColumn[]
 }
 
 export const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
-  const router = useRouter();
-  const params = useParams();
+  const router = useRouter()
+  const params = useParams()
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Simulate loading state for animation
+  setTimeout(() => {
+    setIsLoading(false)
+  }, 500)
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Heading
-          title={`Billboards (${data.length})`}
-          description="Manage billboards for your store"
-        />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 slide-in-from-left-5 duration-300 delay-100">
+        <Card className="w-full sm:w-auto p-4 bg-muted/30 border-dashed">
+          <CardDescription>Billboards are used to display promotional content on your store homepage</CardDescription>
+        </Card>
         <Button
           onClick={() => router.push(`/${params.storeId}/billboards/new`)}
+          className="w-full sm:w-auto slide-in-from-right-5 duration-300 delay-200"
         >
           <Plus className="mr-2 h-4 w-4" />
-          Add new
+          Add New
         </Button>
       </div>
-      <Separator />
-      <DataTable searchKey="label" columns={columns} data={data} />
-      {/* <Heading title="API" description="API calls for Billboards"/> */}
-      <Separator/>
-      {/* <ApiList entityName="billboards" entityIdName="billboardId" /> */}
+
+      <div className={`transition-opacity duration-500 ${isLoading ? "opacity-0" : "opacity-100"}`}>
+        <Card className="slide-in-from-bottom-5 duration-300 delay-100">
+          <CardHeader className="px-6 py-4">
+            <CardTitle>Billboards</CardTitle>
+            <CardDescription>View and manage your store billboards</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <DataTable columns={columns} data={data} searchKey="label" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* <Card className="mt-6 slide-in-from-bottom-5 duration-300 delay-200">
+        <CardHeader>
+          <CardTitle>API</CardTitle>
+          <CardDescription>API calls for Billboards</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ApiList entityName="billboards" entityIdName="billboardId" />
+        </CardContent>
+      </Card> */}
     </>
-  );
-};
+  )
+}
+
