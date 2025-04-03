@@ -24,7 +24,7 @@
 //           fontSize={12}
 //           tickLine={false}
 //           axisLine={false}
-//           tickFormatter={(value) => `Ksh${value}`}
+//           tickFormatter={(value) => `USD${value}`}
 //         />
 //         <Bar dataKey="total" fill="#3498db" radius={[4, 4, 0, 0]} />
 //       </BarChart>
@@ -62,7 +62,7 @@ export function Overview({ data }: OverviewProps) {
     ...item,
     formattedTotal: new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "Ksh",
+      currency: "USD",
     }).format(item.total),
   }))
 
@@ -157,7 +157,7 @@ export function Overview({ data }: OverviewProps) {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `Ksh${value}`}
+              tickFormatter={(value) => `USD${value}`}
               width={60}
             />
             <Tooltip
