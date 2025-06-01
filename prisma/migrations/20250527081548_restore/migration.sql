@@ -124,22 +124,6 @@ CREATE TABLE "Contact" (
     CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "StoreMetrics" (
-    "id" SERIAL NOT NULL,
-    "storeId" TEXT NOT NULL,
-    "totalRevenue" DECIMAL(65,30) NOT NULL DEFAULT 0.00,
-    "salesCount" INTEGER NOT NULL DEFAULT 0,
-    "stockCount" INTEGER NOT NULL DEFAULT 0,
-    "timestamp" TIMESTAMP(3) NOT NULL,
-    "period" TEXT NOT NULL,
-
-    CONSTRAINT "StoreMetrics_pkey" PRIMARY KEY ("id")
-);
-
--- CreateIndex
-CREATE INDEX "idx_store_period" ON "StoreMetrics"("storeId", "period");
-
 -- AddForeignKey
 ALTER TABLE "Billboard" ADD CONSTRAINT "Billboard_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

@@ -23,46 +23,49 @@ export async function POST(req: Request) {
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
-  const address = session?.customer_details?.address;
+  const address = session.customer_details?.address;
+  const phone = session.customer_details?.phone;
 
-  const addressComponents = [
+  const addressString = [
     address?.line1,
     address?.line2,
     address?.city,
     address?.state,
     address?.postal_code,
     address?.country,
-  ];
+  ]
+    .filter((c) => c != null)
+    .join(", ");
 
-  const addressString = addressComponents.filter((c) => c !== null).join(", ");
-
-  if (event.type === "checkout.session.completed") {
-    const order = await prismadb.order.update({
+  if (
+    event.type === "checkout.session.completed" &&
+    session.metadata?.order_id
+  ) {
+    await prismadb.order.update({
       where: {
-        id: session?.metadata?.order_id,
+        // If you trust frontend data, you can skip updating address & phone here.
+        id: session.metadata.order_id,
       },
       data: {
         isPaid: true,
+        // Fallback: uncomment if you want to overwrite with Stripe's version
         address: addressString,
-        phone: session?.customer_details?.phone || "",
-      },
-      include: {
-        orderItems: true,
+        phone: phone || "",
       },
     });
 
-    const productIds = order.orderItems.map((orderItem) => orderItem.productId);
-
-    await prismadb.product.updateMany({
-      where: {
-        id: {
-          in: [...productIds],
-        },
-      },
-      data: {
-        isArchived: true,
-      },
+    // Optionally mark products as archived, etc.
+    const order = await prismadb.order.findUnique({
+      where: { id: session.metadata.order_id },
+      include: { orderItems: true },
     });
+    const productIds = order?.orderItems?.map((oi) => oi.productId) || [];
+    if (productIds.length > 0) {
+      await prismadb.product.updateMany({
+        where: { id: { in: productIds } },
+        data: { isArchived: true },
+      });
+    }
   }
 
   return new NextResponse(null, { status: 200 });

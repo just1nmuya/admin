@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import type { OrderColumn } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-// import { ApiList } from "@/components/ui/api-list"
 import { Badge } from "@/components/ui/badge"
+import { TicketModal } from "./TicketModal"
+import { Button } from "@/components/ui/button"
 
 interface OrderClientProps {
   data: OrderColumn[]
@@ -16,17 +15,18 @@ interface OrderClientProps {
 
 export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedOrder, setSelectedOrder] = useState<OrderColumn | null>(null)
 
-  // Simulate loading state for animation
-  setTimeout(() => {
-    setIsLoading(false)
-  }, 500)
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsLoading(false), 500)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const columns = [
     {
       accessorKey: "products",
       header: "Products",
-      cell: ({ row }: { row: any }) => <div className="max-w-[500px] truncate">{row.original.products}</div>,
+      cell: ({ row }: { row: any }) => <div className="max-w-[300px] truncate">{row.original.products}</div>,
     },
     {
       accessorKey: "phone",
@@ -54,6 +54,19 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
       accessorKey: "createdAt",
       header: "Date",
     },
+    {
+      id: "actions",
+      header: "Ticket",
+      cell: ({ row }: { row: any }) => (
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => setSelectedOrder(row.original)}
+        >
+          Print Ticket
+        </Button>
+      ),
+    },
   ]
 
   return (
@@ -69,16 +82,16 @@ export const OrderClient: React.FC<OrderClientProps> = ({ data }) => {
           </CardContent>
         </Card>
       </div>
-      {/* <Card className="slide-in-from-bottom-5 duration-300 delay-200">
-        <CardHeader>
-          <CardTitle>API</CardTitle>
-          <CardDescription>API calls for Orders</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ApiList entityName="orders" entityIdName="orderId" />
-        </CardContent>
-      </Card> */}
+
+      {selectedOrder && (
+        <div className="print-area">
+          <TicketModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+        </div>
+        
+      )}
     </>
   )
 }
-
