@@ -1,9 +1,9 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
 import { sendEmail } from "@/lib/email";
-import { z } from "zod";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,41 +11,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-const paramsSchema = z.object({
-  storeId: z.string().uuid().or(z.string()), // you can adjust validation here
-});
-
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ storeId: string }> }
+  context: { params: { storeId: string } }
 ): Promise<NextResponse> {
-  const { storeId } = await params;
+  const { storeId } = context.params;
+  const { productIds, customerEmail, shippingAddress, phoneNumber } = await req.json();
 
-  // Validate storeId
-  paramsSchema.parse({ storeId });
-
-  // Parse request body
-  const { productIds, customerEmail, shippingAddress, phoneNumber } =
-    await req.json();
-
-  // Basic validation
-  if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+  if (!productIds || productIds.length === 0) {
     return new NextResponse("Product Ids are required", { status: 400 });
   }
   if (!shippingAddress || !phoneNumber) {
-    return new NextResponse("Address and phone number are required", {
-      status: 400,
-    });
+    return new NextResponse("Address and phone number are required", { status: 400 });
   }
   if (!customerEmail) {
     return new NextResponse("Email is required", { status: 400 });
   }
 
-  // Fetch products
+  // Fetch products for line items
   const products = await prismadb.product.findMany({
     where: { id: { in: productIds } },
   });
@@ -66,7 +53,6 @@ export async function POST(
     });
   });
 
-  // Shipping logic
   const shippingCost = subtotal > 150 ? 0 : 10;
   if (shippingCost > 0) {
     line_items.push({
@@ -79,7 +65,7 @@ export async function POST(
     });
   }
 
-  // Create order in DB
+  // Create order in database with address and phone
   const order = await prismadb.order.create({
     data: {
       storeId,
@@ -95,7 +81,7 @@ export async function POST(
     },
   });
 
-  // Create Stripe checkout session
+  // Create Stripe Checkout Session
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
@@ -106,13 +92,12 @@ export async function POST(
     metadata: { order_id: order.id },
   });
 
-  // Send confirmation email (simple example)
+  // Send confirmation email
   const orderTotal = (subtotal + shippingCost).toFixed(2);
-  await sendEmail(
-    customerEmail,
-    "Order Confirmation – Thank You for Shopping!",
-    `<p>Thank you for your order! Your order ID is <strong>${order.id}</strong>.</p>
-     <div style="max-width:600px; margin:0 auto; padding:20px; font-family:Arial,sans-serif; background:#fff; color:#333; border:1px solid #e1e1e1; border-radius:8px;">
+  const emailSubject = "Order Confirmation – Thank You for Shopping!";
+  const emailText = `Thank you for your order! Your order ID is ${order.id}.`;
+  const emailHtml = `
+    <div style="max-width:600px; margin:0 auto; padding:20px; font-family:Arial,sans-serif; background:#fff; color:#333; border:1px solid #e1e1e1; border-radius:8px;">
       <h2 style="text-align:center; color:#1a1a1a; margin-bottom:20px;">Order Confirmed!</h2>
       <p style="font-size:16px; margin-bottom:10px;">Hello,</p>
       <p style="font-size:16px; margin-bottom:20px;">
@@ -166,8 +151,12 @@ export async function POST(
         © ${new Date().getFullYear()} Max’s Store. All rights reserved.
       </p>
     </div>
-    `
-  );
+  `;
 
-  return NextResponse.json({ url: session.url }, { headers: corsHeaders });
+  await sendEmail(customerEmail, emailSubject, emailText, emailHtml);
+
+  return NextResponse.json(
+    { url: session.url },
+    { headers: corsHeaders }
+  );
 }
