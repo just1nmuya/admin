@@ -111,62 +111,66 @@ export async function POST(
   await sendEmail(
     customerEmail,
     "Order Confirmation – Thank You for Shopping!",
-    `<p>Thank you for your order! Your order ID is <strong>${order.id}</strong>.</p>
-     <div style="max-width:600px; margin:0 auto; padding:20px; font-family:Arial,sans-serif; background:#fff; color:#333; border:1px solid #e1e1e1; border-radius:8px;">
-      <h2 style="text-align:center; color:#1a1a1a; margin-bottom:20px;">Order Confirmed!</h2>
-      <p style="font-size:16px; margin-bottom:10px;">Hello,</p>
-      <p style="font-size:16px; margin-bottom:20px;">
-        Thank you for shopping with us. Your order <strong>#${order.id.slice(0, 8).toUpperCase()}</strong> has been confirmed on ${new Date().toLocaleDateString()}.
-      </p>
-      <hr style="border:none; border-bottom:1px solid #e1e1e1; margin:20px 0;" />
-      <h3 style="font-size:18px; margin-bottom:10px; color:#1a1a1a;">Shipping Details</h3>
-      <p style="font-size:14px; margin:4px 0;"><strong>Address:</strong> ${shippingAddress}</p>
-      <p style="font-size:14px; margin:4px 0;"><strong>Phone:</strong> ${phoneNumber}</p>
-      <hr style="border:none; border-bottom:1px solid #e1e1e1; margin:20px 0;" />
-      <h3 style="font-size:18px; margin-bottom:10px; color:#1a1a1a;">Order Summary</h3>
-      <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-        <thead>
-          <tr>
-            <th style="text-align:left; padding:8px 0; font-weight:600; color:#1a1a1a;">Item(s)</th>
-            <th style="text-align:right; padding:8px 0; font-weight:600; color:#1a1a1a;">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${products
-            .map(
-              (p) => `
-            <tr>
-              <td style="padding:6px 0; font-size:14px; color:#333;">${p.name}</td>
-              <td style="padding:6px 0; font-size:14px; color:#333; text-align:right;">$${p.price.toNumber().toFixed(2)}</td>
-            </tr>`
-            )
-            .join("")}
-          ${
-            shippingCost > 0
-              ? `
-            <tr>
-              <td style="padding:6px 0; font-size:14px; color:#333;">Shipping</td>
-              <td style="padding:6px 0; font-size:14px; color:#333; text-align:right;">$${shippingCost.toFixed(2)}</td>
-            </tr>`
-              : ""
-          }
-        </tbody>
-        <tfoot>
-          <tr>
-            <td style="padding:12px 0; font-size:16px; font-weight:600; color:#1a1a1a;">Total</td>
-            <td style="padding:12px 0; font-size:16px; font-weight:600; color:#1a1a1a; text-align:right;">$${orderTotal}</td>
-          </tr>
-        </tfoot>
-      </table>
-      <p style="font-size:14px; margin-bottom:20px;">
-        We will notify you when your items have shipped. For assistance, please
-        <a href="https://stores-nu.vercel.app/contact" target="_blank" rel="noreferrer" style="color:#1a73e8; text-decoration:none;">contact our support team</a>.
-      </p>
-      <p style="font-size:12px; color:#777; text-align:center; margin-top:30px;">
-        © ${new Date().getFullYear()} Max’s Store. All rights reserved.
-      </p>
-    </div>
+    `  Shipping Address: ${shippingAddress}
+  Phone: ${phoneNumber}
+  Order Total: $${orderTotal}
+  Thank you for shopping with us!`,
     `
+       <div style="max-width:600px; margin:0 auto; padding:20px; font-family:Arial,sans-serif; background:#fff; color:#333; border:1px solid #e1e1e1; border-radius:8px;">
+        <h2 style="text-align:center; color:#1a1a1a; margin-bottom:20px;">Order Confirmed!</h2>
+        <p style="font-size:16px; margin-bottom:10px;">Hello,</p>
+        <p style="font-size:16px; margin-bottom:20px;">
+          Thank you for shopping with us. Your order <strong>#${order.id.slice(0, 8).toUpperCase()}</strong> has been confirmed on ${new Date().toLocaleDateString()}.
+        </p>
+        <hr style="border:none; border-bottom:1px solid #e1e1e1; margin:20px 0;" />
+        <h3 style="font-size:18px; margin-bottom:10px; color:#1a1a1a;">Shipping Details</h3>
+        <p style="font-size:14px; margin:4px 0;"><strong>Address:</strong> ${shippingAddress}</p>
+        <p style="font-size:14px; margin:4px 0;"><strong>Phone:</strong> ${phoneNumber}</p>
+        <hr style="border:none; border-bottom:1px solid #e1e1e1; margin:20px 0;" />
+        <h3 style="font-size:18px; margin-bottom:10px; color:#1a1a1a;">Order Summary</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+          <thead>
+            <tr>
+              <th style="text-align:left; padding:8px 0; font-weight:600; color:#1a1a1a;">Item(s)</th>
+              <th style="text-align:right; padding:8px 0; font-weight:600; color:#1a1a1a;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${products
+              .map(
+                (p) => `
+              <tr>
+                <td style="padding:6px 0; font-size:14px; color:#333;">${p.name}</td>
+                <td style="padding:6px 0; font-size:14px; color:#333; text-align:right;">$${p.price.toNumber().toFixed(2)}</td>
+              </tr>`
+              )
+              .join("")}
+            ${
+              shippingCost > 0
+                ? `
+              <tr>
+                <td style="padding:6px 0; font-size:14px; color:#333;">Shipping</td>
+                <td style="padding:6px 0; font-size:14px; color:#333; text-align:right;">$${shippingCost.toFixed(2)}</td>
+              </tr>`
+                : ""
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td style="padding:12px 0; font-size:16px; font-weight:600; color:#1a1a1a;">Total</td>
+              <td style="padding:12px 0; font-size:16px; font-weight:600; color:#1a1a1a; text-align:right;">$${orderTotal}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <p style="font-size:14px; margin-bottom:20px;">
+          We will notify you when your items have shipped. For assistance, please
+          <a href="https://stores-nu.vercel.app/contact" target="_blank" rel="noreferrer" style="color:#1a73e8; text-decoration:none;">contact our support team</a>.
+        </p>
+        <p style="font-size:12px; color:#777; text-align:center; margin-top:30px;">
+          © ${new Date().getFullYear()} Max’s Store. All rights reserved.
+        </p>
+      </div>
+      `
   );
 
   return NextResponse.json({ url: session.url }, { headers: corsHeaders });
